@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0"
+    />
+    <title>Azi Reader Mobile</title>
+    <style>
+      :root {
+        --bg: #f7f3eb;
+        --bg-strong: #fcfaf5;
+        --panel: rgba(255, 253, 248, 0.92);
+        --line: rgba(83, 68, 54, 0.12);
+        --line-strong: rgba(83, 68, 54, 0.2);
+        --text: #251f19;
+        --muted: #756759;
+        --accent: #866247;
+        --quote: #efe5d8;
+        --code: #2f3a45;
+        --shadow: 0 18px 42px rgba(60, 46, 34, 0.08);
+        --radius: 22px;
+        --safe-top: env(safe-area-inset-top, 0px);
+        --safe-bottom: env(safe-area-inset-bottom, 0px);
+        --prose-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+        --prose-size: 1.05rem;
+        --prose-line-height: 1.88;
+        --title-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      html,
+      body {
+        margin: 0;
+        min-height: 100%;
+      }
+
+      body {
+        background:
+          radial-gradient(circle at top, rgba(198, 177, 151, 0.16), transparent 36%),
+          linear-gradient(180deg, #faf7f1 0%, var(--bg) 100%);
+        color: var(--text);
+        font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+      }
+
+      body.font-serif {
+        --prose-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
+        --prose-size: 1.1rem;
+        --prose-line-height: 1.82;
+      }
+
+      body.zen-mode {
+        background: var(--bg-strong);
+      }
+
+      .app {
+        width: 100%;
+        max-width: 430px;
+        margin: 0 auto;
+        padding: calc(var(--safe-top) + 12px) 14px calc(var(--safe-bottom) + 18px);
+      }
+
+      .screen {
+        display: grid;
+        gap: 14px;
+      }
+
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 6px 2px 2px;
+      }
+
+      .title {
+        margin: 0;
+        font-family: var(--title-font);
+        font-size: 1.15rem;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+
+      .topbar-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .icon-button,
+      .pill-button,
+      .tiny-button {
+        appearance: none;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.56);
+        color: var(--text);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .icon-button {
+        min-width: 40px;
+        height: 40px;
+        border-radius: 999px;
+      }
+
+      .pill-button {
+        min-height: 42px;
+        padding: 0 14px;
+        border-radius: 999px;
+      }
+
+      .tiny-button {
+        min-height: 32px;
+        padding: 0 11px;
+        border-radius: 999px;
+        font-size: 0.88rem;
+      }
+
+      .card {
+        border: 1px solid var(--line);
+        border-radius: var(--radius);
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        backdrop-filter: blur(16px);
+      }
+
+      .composer {
+        padding: 14px;
+        display: grid;
+        gap: 12px;
+      }
+
+      .button-row {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+      }
+
+      .meta {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+      }
+
+      .meta-pill {
+        display: inline-flex;
+        align-items: center;
+        min-height: 30px;
+        padding: 0 10px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.5);
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .library {
+        padding: 10px;
+        display: grid;
+        gap: 8px;
+      }
+
+      .library-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 4px 4px 2px;
+      }
+
+      .library-head h2 {
+        margin: 0;
+        font-size: 0.92rem;
+        font-weight: 600;
+      }
+
+      .library-list {
+        display: grid;
+        gap: 8px;
+      }
+
+      .library-item {
+        display: grid;
+        gap: 8px;
+        padding: 12px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(255, 255, 255, 0.44);
+      }
+
+      .library-item.current {
+        border-color: rgba(134, 98, 71, 0.26);
+        background: rgba(255, 249, 242, 0.92);
+      }
+
+      .library-title {
+        margin: 0;
+        font-size: 0.96rem;
+        font-weight: 600;
+      }
+
+      .library-meta {
+        margin: 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.45;
+      }
+
+      .library-actions {
+        display: flex;
+        gap: 8px;
+      }
+
+      .empty-library {
+        display: none;
+      }
+
+      .reader {
+        padding: 10px 0 0;
+      }
+
+      .reader-toolbar {
+        display: none;
+      }
+
+      body.reading-mode .reader-toolbar {
+        display: grid;
+        gap: 10px;
+        position: sticky;
+        top: calc(var(--safe-top) + 8px);
+        z-index: 20;
+        margin-bottom: 12px;
+      }
+
+      body.zen-mode .reader-toolbar {
+        display: none;
+      }
+
+      .toolbar-card {
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        background: rgba(255, 252, 246, 0.84);
+        box-shadow: 0 12px 28px rgba(60, 46, 34, 0.08);
+        backdrop-filter: blur(16px);
+        padding: 10px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+
+      .toolbar-title {
+        min-width: 0;
+      }
+
+      .toolbar-title p {
+        margin: 0;
+      }
+
+      .toolbar-file {
+        font-family: var(--title-font);
+        font-size: 0.98rem;
+        font-weight: 500;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .toolbar-meta {
+        color: var(--muted);
+        font-size: 0.8rem;
+      }
+
+      .segmented {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px;
+        border-radius: 999px;
+        border: 1px solid var(--line);
+        background: rgba(255, 255, 255, 0.52);
+        gap: 4px;
+      }
+
+      .segment-button {
+        appearance: none;
+        border: 0;
+        background: transparent;
+        color: var(--muted);
+        min-height: 32px;
+        padding: 0 12px;
+        border-radius: 999px;
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .segment-button.active {
+        background: rgba(134, 98, 71, 0.11);
+        color: var(--text);
+      }
+
+      .prose-wrap {
+        min-height: 58vh;
+      }
+
+      .empty-state {
+        min-height: 54vh;
+        display: grid;
+        place-items: center;
+        padding: 12px 0 90px;
+      }
+
+      .prose {
+        display: none;
+        padding: 8px 4px 92px;
+        font-family: var(--prose-font);
+      }
+
+      body.reading-mode .prose {
+        display: block;
+      }
+
+      body.zen-mode .prose {
+        padding-top: 18px;
+      }
+
+      .prose > :first-child {
+        margin-top: 0;
+      }
+
+      .prose h1,
+      .prose h2,
+      .prose h3,
+      .prose h4 {
+        font-family: var(--title-font);
+        color: #241d17;
+        font-weight: 500;
+        letter-spacing: -0.02em;
+      }
+
+      .prose h1 {
+        font-size: 2.15rem;
+        line-height: 0.98;
+        margin: 0 0 22px;
+      }
+
+      .prose h2 {
+        font-size: 1.55rem;
+        line-height: 1.04;
+        margin: 48px 0 16px;
+      }
+
+      .prose h3 {
+        font-size: 1.22rem;
+        margin: 30px 0 12px;
+      }
+
+      .prose p,
+      .prose li {
+        color: #40362d;
+        font-size: var(--prose-size);
+        line-height: var(--prose-line-height);
+      }
+
+      .prose p,
+      .prose ul,
+      .prose ol,
+      .prose blockquote,
+      .prose pre {
+        margin: 0 0 18px;
+      }
+
+      .prose ul,
+      .prose ol {
+        padding-left: 1.3rem;
+      }
+
+      .prose li + li {
+        margin-top: 8px;
+      }
+
+      .prose a {
+        color: var(--accent);
+        text-decoration-color: rgba(134, 98, 71, 0.34);
+        text-underline-offset: 0.18em;
+      }
+
+      .prose strong {
+        color: #231d16;
+      }
+
+      .prose hr {
+        border: 0;
+        height: 1px;
+        background: var(--line);
+        margin: 40px 0;
+      }
+
+      .prose blockquote {
+        border-left: 3px solid rgba(134, 98, 71, 0.25);
+        background: var(--quote);
+        border-radius: 0 16px 16px 0;
+        padding: 14px 16px;
+      }
+
+      .prose code {
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
+        font-size: 0.9em;
+        background: rgba(47, 58, 69, 0.08);
+        color: var(--code);
+        border-radius: 8px;
+        padding: 0.14em 0.36em;
+      }
+
+      .prose pre {
+        overflow-x: auto;
+        padding: 16px;
+        border-radius: 18px;
+        background: #1f252d;
+        color: #eef2f7;
+      }
+
+      .prose pre code {
+        background: transparent;
+        color: inherit;
+        padding: 0;
+      }
+
+      .prose img {
+        max-width: 100%;
+        border-radius: 18px;
+        display: block;
+        margin: 22px auto;
+      }
+
+      .bottom-dock {
+        position: fixed;
+        left: 50%;
+        bottom: calc(var(--safe-bottom) + 12px);
+        transform: translateX(-50%);
+        width: min(402px, calc(100vw - 20px));
+        display: flex;
+        gap: 8px;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        background: rgba(255, 252, 246, 0.88);
+        box-shadow: 0 14px 34px rgba(60, 46, 34, 0.12);
+        backdrop-filter: blur(18px);
+      }
+
+      .bottom-dock .pill-button {
+        flex: 1;
+        min-height: 40px;
+        padding: 0 10px;
+      }
+
+      .bottom-dock .pill-button.primary {
+        border-color: rgba(134, 98, 71, 0.22);
+        background: linear-gradient(180deg, rgba(160, 120, 90, 0.14), rgba(134, 98, 71, 0.08));
+      }
+
+      .hidden-input {
+        display: none;
+      }
+
+      body.zen-mode .composer,
+      body.zen-mode .library,
+      body.zen-mode .topbar {
+        display: none;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="app">
+      <div class="screen">
+        <header class="topbar">
+          <h1 class="title">Azi Reader</h1>
+          <div class="topbar-actions">
+            <button class="icon-button" id="pickFileButton" type="button">+</button>
+          </div>
+        </header>
+
+        <section class="composer card">
+          <div class="button-row">
+            <button class="pill-button" id="chooseButton" type="button">Choose markdown</button>
+            <button class="pill-button" id="loadSampleButton" type="button">Sample</button>
+          </div>
+          <div class="meta">
+            <span class="meta-pill" id="fileNamePill">No file</span>
+            <span class="meta-pill" id="wordCountPill">0 words</span>
+          </div>
+        </section>
+
+        <section class="library card">
+          <div class="library-head">
+            <h2>Saved</h2>
+            <button class="tiny-button" id="clearLibraryButton" type="button">Clear</button>
+          </div>
+          <div class="library-list" id="libraryList"></div>
+          <p class="empty-library" id="libraryEmpty"></p>
+        </section>
+
+        <section class="reader">
+          <div class="reader-toolbar" id="readerToolbar">
+            <div class="toolbar-card">
+              <div class="toolbar-title">
+                <p class="toolbar-file" id="toolbarTitle">Untitled document</p>
+                <p class="toolbar-meta" id="toolbarMeta">0 words</p>
+              </div>
+              <button class="tiny-button" id="toggleZenButton" type="button">Zen</button>
+            </div>
+            <div class="toolbar-card">
+              <div class="segmented" aria-label="Body font">
+                <button class="segment-button" id="sansModeButton" type="button">Sans</button>
+                <button class="segment-button" id="serifModeButton" type="button">Serif</button>
+              </div>
+              <button class="tiny-button" id="showToolsButton" type="button">Tools</button>
+            </div>
+          </div>
+
+          <div class="prose-wrap">
+            <div class="empty-state" id="emptyState">
+              <button class="pill-button primary" id="emptyPickFileButton" type="button">
+                Choose markdown
+              </button>
+            </div>
+            <article class="prose" id="prose"></article>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <div class="bottom-dock" id="bottomDock">
+      <button class="pill-button primary" id="dockChooseButton" type="button">Choose</button>
+      <button class="pill-button" id="dockZenButton" type="button">Zen</button>
+      <button class="pill-button" id="dockToolsButton" type="button">Tools</button>
+    </div>
+
+    <input class="hidden-input" id="fileInput" type="file" accept=".md,.markdown,text/markdown" />
+
+    <script type="module">
+      import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
+
+      const STORAGE_LIBRARY = "azi-reader-library";
+      const STORAGE_LAST = "azi-reader-last-document";
+      const STORAGE_FONT = "azi-reader-font-mobile";
+      const STORAGE_ZEN = "azi-reader-zen-mobile";
+
+      const fileInput = document.getElementById("fileInput");
+      const pickFileButton = document.getElementById("pickFileButton");
+      const chooseButton = document.getElementById("chooseButton");
+      const emptyPickFileButton = document.getElementById("emptyPickFileButton");
+      const dockChooseButton = document.getElementById("dockChooseButton");
+      const loadSampleButton = document.getElementById("loadSampleButton");
+      const clearLibraryButton = document.getElementById("clearLibraryButton");
+      const toggleZenButton = document.getElementById("toggleZenButton");
+      const dockZenButton = document.getElementById("dockZenButton");
+      const showToolsButton = document.getElementById("showToolsButton");
+      const dockToolsButton = document.getElementById("dockToolsButton");
+      const sansModeButton = document.getElementById("sansModeButton");
+      const serifModeButton = document.getElementById("serifModeButton");
+      const fileNamePill = document.getElementById("fileNamePill");
+      const wordCountPill = document.getElementById("wordCountPill");
+      const libraryList = document.getElementById("libraryList");
+      const libraryEmpty = document.getElementById("libraryEmpty");
+      const toolbarTitle = document.getElementById("toolbarTitle");
+      const toolbarMeta = document.getElementById("toolbarMeta");
+      const prose = document.getElementById("prose");
+      const emptyState = document.getElementById("emptyState");
+
+      let currentDocumentId = null;
+
+      const sampleMarkdown = `# A Quiet Reader
+
+This page is tuned for reading on a phone.
+
+## Notes
+
+- upload one markdown file
+- keep it locally
+- reopen it later
+
+## A short block
+
+\`\`\`ts
+type ReaderDocument = {
+  fileName: string;
+  content: string;
+};
+\`\`\``;
+
+      marked.setOptions({
+        breaks: false,
+        gfm: true,
+      });
+
+      function getLibrary() {
+        try {
+          const parsed = JSON.parse(localStorage.getItem(STORAGE_LIBRARY) || "[]");
+          return Array.isArray(parsed) ? parsed : [];
+        } catch {
+          return [];
+        }
+      }
+
+      function setLibrary(documents) {
+        localStorage.setItem(STORAGE_LIBRARY, JSON.stringify(documents));
+      }
+
+      function setCurrentDocument(id) {
+        currentDocumentId = id;
+
+        if (id) {
+          localStorage.setItem(STORAGE_LAST, id);
+        } else {
+          localStorage.removeItem(STORAGE_LAST);
+        }
+      }
+
+      function countWords(text) {
+        return text.trim() ? text.trim().split(/\s+/).length : 0;
+      }
+
+      function extractTitle(markdown, fallback) {
+        const match = markdown.match(/^#\s+(.+)$/m);
+        return match?.[1]?.trim() || fallback;
+      }
+
+      function formatUpdatedAt(value) {
+        return new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        }).format(new Date(value));
+      }
+
+      function syncFontButtons(mode) {
+        [sansModeButton, serifModeButton].forEach((button) => {
+          const active = (mode === "sans" && button === sansModeButton) || (mode === "serif" && button === serifModeButton);
+          button.classList.toggle("active", active);
+        });
+      }
+
+      function setFontMode(mode) {
+        document.body.classList.toggle("font-serif", mode === "serif");
+        localStorage.setItem(STORAGE_FONT, mode);
+        syncFontButtons(mode === "serif" ? "serif" : "sans");
+      }
+
+      function setZenMode(enabled) {
+        document.body.classList.toggle("zen-mode", enabled);
+        localStorage.setItem(STORAGE_ZEN, enabled ? "1" : "0");
+      }
+
+      function renderLibrary() {
+        const documents = getLibrary();
+        libraryList.innerHTML = "";
+        libraryEmpty.hidden = documents.length > 0;
+        clearLibraryButton.hidden = documents.length === 0;
+
+        documents.forEach((documentItem) => {
+          const card = document.createElement("article");
+          card.className = "library-item";
+
+          if (documentItem.id === currentDocumentId) {
+            card.classList.add("current");
+          }
+
+          const title = document.createElement("p");
+          title.className = "library-title";
+          title.textContent = documentItem.title || documentItem.fileName;
+
+          const meta = document.createElement("p");
+          meta.className = "library-meta";
+          meta.textContent = `${documentItem.wordCount} words · ${formatUpdatedAt(documentItem.updatedAt)}`;
+
+          const actions = document.createElement("div");
+          actions.className = "library-actions";
+
+          const openButton = document.createElement("button");
+          openButton.className = "tiny-button";
+          openButton.type = "button";
+          openButton.textContent = "Open";
+          openButton.addEventListener("click", () => {
+            renderMarkdown(documentItem.content, documentItem.fileName, documentItem.id, false);
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "tiny-button";
+          deleteButton.type = "button";
+          deleteButton.textContent = "Delete";
+          deleteButton.addEventListener("click", () => deleteDocument(documentItem.id));
+
+          actions.append(openButton, deleteButton);
+          card.append(title, meta, actions);
+          libraryList.append(card);
+        });
+      }
+
+      function upsertDocument(fileName, markdown, preferredId = null) {
+        const documents = getLibrary();
+        const existingIndex = documents.findIndex((documentItem) => {
+          if (preferredId && documentItem.id === preferredId) {
+            return true;
+          }
+
+          return documentItem.fileName === fileName && documentItem.content === markdown;
+        });
+
+        const nextDocument = {
+          id: preferredId || documents[existingIndex]?.id || `doc-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          fileName: fileName || "Untitled document",
+          title: extractTitle(markdown, fileName || "Untitled document"),
+          content: markdown,
+          wordCount: countWords(markdown),
+          updatedAt: new Date().toISOString(),
+        };
+
+        if (existingIndex >= 0) {
+          documents.splice(existingIndex, 1);
+        }
+
+        documents.unshift(nextDocument);
+        setLibrary(documents.slice(0, 24));
+        setCurrentDocument(nextDocument.id);
+        renderLibrary();
+        return nextDocument.id;
+      }
+
+      function deleteDocument(id) {
+        const nextDocuments = getLibrary().filter((documentItem) => documentItem.id !== id);
+        setLibrary(nextDocuments);
+
+        if (currentDocumentId === id) {
+          setCurrentDocument(null);
+        }
+
+        renderLibrary();
+      }
+
+      function renderMarkdown(markdown, fileName, documentId = null, shouldPersist = true) {
+        prose.innerHTML = marked.parse(markdown);
+        emptyState.hidden = true;
+        document.body.classList.add("reading-mode");
+
+        const wordCount = `${countWords(markdown)} words`;
+        fileNamePill.textContent = fileName || "Untitled";
+        wordCountPill.textContent = wordCount;
+        toolbarTitle.textContent = extractTitle(markdown, fileName || "Untitled document");
+        toolbarMeta.textContent = wordCount;
+
+        if (shouldPersist) {
+          setCurrentDocument(upsertDocument(fileName || "Untitled document", markdown, documentId));
+        } else {
+          setCurrentDocument(documentId);
+          renderLibrary();
+        }
+      }
+
+      async function readFile(file) {
+        const text = await file.text();
+        renderMarkdown(text, file.name);
+      }
+
+      function openPicker() {
+        fileInput.click();
+      }
+
+      [pickFileButton, chooseButton, emptyPickFileButton, dockChooseButton].forEach((button) => {
+        button.addEventListener("click", openPicker);
+      });
+
+      fileInput.addEventListener("change", async (event) => {
+        const file = event.target.files?.[0];
+
+        if (!file) {
+          return;
+        }
+
+        await readFile(file);
+        fileInput.value = "";
+      });
+
+      loadSampleButton.addEventListener("click", () => {
+        renderMarkdown(sampleMarkdown, "sample.md");
+      });
+
+      clearLibraryButton.addEventListener("click", () => {
+        setLibrary([]);
+        setCurrentDocument(null);
+        renderLibrary();
+      });
+
+      [toggleZenButton, dockZenButton].forEach((button) => {
+        button.addEventListener("click", () => {
+          setZenMode(!document.body.classList.contains("zen-mode"));
+        });
+      });
+
+      [showToolsButton, dockToolsButton].forEach((button) => {
+        button.addEventListener("click", () => {
+          document.body.classList.remove("zen-mode");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        });
+      });
+
+      sansModeButton.addEventListener("click", () => setFontMode("sans"));
+      serifModeButton.addEventListener("click", () => setFontMode("serif"));
+
+      const storedFontMode = localStorage.getItem(STORAGE_FONT);
+      const storedZenMode = localStorage.getItem(STORAGE_ZEN);
+      setFontMode(storedFontMode === "serif" ? "serif" : "sans");
+      setZenMode(storedZenMode === "1");
+      renderLibrary();
+
+      const lastDocumentId = localStorage.getItem(STORAGE_LAST);
+      const lastDocument = getLibrary().find((documentItem) => documentItem.id === lastDocumentId);
+
+      if (lastDocument) {
+        renderMarkdown(lastDocument.content, lastDocument.fileName, lastDocument.id, false);
+      }
+    </script>
+  </body>
+</html>
