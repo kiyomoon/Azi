@@ -3,32 +3,24 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Azi Markdown Reader</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,500&family=Crimson+Pro:wght@400;500;600&family=Manrope:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap"
-      rel="stylesheet"
-    />
+    <title>Azi Reader Desktop</title>
     <style>
       :root {
-        --bg: #f5f1e8;
-        --bg-soft: #fbf8f2;
-        --panel: rgba(255, 252, 245, 0.8);
-        --panel-strong: rgba(255, 253, 248, 0.94);
-        --line: rgba(86, 73, 58, 0.14);
-        --line-strong: rgba(86, 73, 58, 0.22);
-        --text: #2b241d;
-        --muted: #746555;
-        --accent: #8c5c3e;
-        --accent-soft: rgba(140, 92, 62, 0.1);
-        --quote: #ede4d7;
+        --bg: #eef1f0;
+        --bg-soft: #f7f9f8;
+        --panel: rgba(251, 252, 251, 0.9);
+        --panel-strong: rgba(249, 250, 250, 0.96);
+        --line: rgba(83, 94, 106, 0.12);
+        --line-strong: rgba(83, 94, 106, 0.2);
+        --text: #262b31;
+        --muted: #6d757d;
+        --accent: #6b7988;
+        --quote: #ecf0f2;
         --code: #2f3a45;
-        --shadow: 0 18px 45px rgba(62, 48, 35, 0.08);
+        --shadow: 0 18px 44px rgba(49, 58, 68, 0.07);
         --radius: 24px;
-        --prose-font: "Manrope", system-ui, sans-serif;
-        --prose-size: 1.04rem;
-        --prose-line-height: 1.9;
+        --ui-font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+        --serif-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
       }
 
       * {
@@ -43,242 +35,281 @@
 
       body {
         background:
-          radial-gradient(circle at top left, rgba(196, 174, 147, 0.2), transparent 28%),
-          radial-gradient(circle at bottom right, rgba(146, 122, 102, 0.14), transparent 28%),
-          linear-gradient(180deg, #f8f4ec 0%, var(--bg) 100%);
+          radial-gradient(circle at top left, rgba(172, 185, 196, 0.16), transparent 28%),
+          radial-gradient(circle at bottom right, rgba(155, 168, 181, 0.12), transparent 28%),
+          linear-gradient(180deg, #f7f9f8 0%, var(--bg) 100%);
         color: var(--text);
-        font-family: "Manrope", system-ui, sans-serif;
+        font-family: var(--ui-font);
       }
 
-      body.font-iowan {
-        --prose-font: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", Palatino, Georgia, serif;
-        --prose-size: 1.1rem;
-        --prose-line-height: 1.82;
-      }
-
-      body.font-crimson {
-        --prose-font: "Crimson Pro", Georgia, serif;
-        --prose-size: 1.12rem;
-        --prose-line-height: 1.86;
-      }
-
-      body.font-source {
-        --prose-font: "Source Serif 4", Georgia, serif;
-        --prose-size: 1.12rem;
-        --prose-line-height: 1.84;
+      button,
+      input,
+      textarea,
+      select {
+        font: inherit;
       }
 
       .page {
-        width: min(1160px, calc(100% - 32px));
+        width: min(1120px, calc(100% - 40px));
         margin: 0 auto;
-        padding: 36px 0 56px;
+        padding: 18px 0 40px;
       }
 
-      body.reading-mode .page {
-        width: min(920px, calc(100% - 28px));
-        padding-top: 20px;
+      .menu-button,
+      .button,
+      .button-ghost,
+      .tiny-button {
+        appearance: none;
+        border-radius: 999px;
+        cursor: pointer;
       }
 
-      body.reading-mode.zen-mode .page {
-        width: min(820px, calc(100% - 24px));
-        padding-top: 14px;
-        padding-bottom: 28px;
-      }
-
-      .hero {
-        display: grid;
-        grid-template-columns: minmax(0, 0.95fr) minmax(320px, 0.75fr);
-        gap: 24px;
-        align-items: stretch;
-      }
-
-      body.reading-mode .hero {
-        display: none;
-      }
-
-      .hero-copy,
-      .upload-panel,
-      .reader-panel {
+      .menu-button,
+      .button,
+      .button-ghost {
+        min-height: 40px;
+        padding: 0 16px;
         border: 1px solid var(--line);
-        border-radius: var(--radius);
+      }
+
+      .menu-button {
+        position: fixed;
+        top: 16px;
+        right: 16px;
+        z-index: 42;
+        min-height: 38px;
+        padding: 0 14px;
+        background: rgba(252, 253, 253, 0.62);
+        color: var(--text);
+        box-shadow: 0 10px 26px rgba(49, 58, 68, 0.08);
+        backdrop-filter: blur(14px);
+      }
+
+      .button {
+        border-color: rgba(107, 121, 136, 0.24);
+        background: linear-gradient(180deg, rgba(122, 138, 154, 0.14), rgba(107, 121, 136, 0.08));
+        color: var(--text);
+      }
+
+      .button-ghost {
+        background: rgba(252, 253, 253, 0.52);
+        color: var(--muted);
+      }
+
+      .tiny-button {
+        min-height: 32px;
+        padding: 0 12px;
+        border: 1px solid var(--line);
+        background: rgba(252, 253, 253, 0.5);
+        color: var(--text);
+      }
+
+      .tiny-button[data-tone="danger"] {
+        color: #855864;
+      }
+
+      .menu-backdrop {
+        position: fixed;
+        inset: 0;
+        background: rgba(31, 37, 44, 0.1);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 180ms ease;
+        z-index: 39;
+      }
+
+      body.menu-open .menu-backdrop {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .menu-panel {
+        display: none;
+        position: fixed;
+        top: 62px;
+        right: 16px;
+        z-index: 40;
+        width: min(380px, calc(100vw - 32px));
+        max-height: min(78vh, 720px);
+        overflow-x: hidden;
+        overflow-y: auto;
+        padding: 18px;
+        border: 1px solid var(--line);
+        border-radius: 22px;
         background: var(--panel);
         box-shadow: var(--shadow);
-        backdrop-filter: blur(16px);
       }
 
-      .hero-copy {
-        padding: 32px 34px;
+      body.menu-open .menu-panel {
         display: grid;
         gap: 18px;
       }
 
-      .eyebrow {
+      .menu-section {
+        display: grid;
+        gap: 12px;
+        min-width: 0;
+      }
+
+      .menu-label {
         margin: 0;
         color: var(--muted);
-        font-size: 0.78rem;
-        letter-spacing: 0.18em;
+        font-size: 0.76rem;
+        letter-spacing: 0.14em;
         text-transform: uppercase;
-      }
-
-      .hero h1 {
-        margin: 0;
-        font-family: "Newsreader", Georgia, serif;
-        font-size: clamp(1.8rem, 3.2vw, 2.8rem);
-        line-height: 1;
-        font-weight: 500;
-        max-width: 12ch;
-      }
-
-      .upload-panel {
-        padding: 24px;
-        display: grid;
-        gap: 16px;
-        align-content: start;
-      }
-
-      .upload-head h2 {
-        margin: 0;
-        font-size: 1.15rem;
-        font-weight: 600;
       }
 
       .dropzone {
         border: 1px dashed var(--line-strong);
-        border-radius: 20px;
-        background: rgba(255, 255, 255, 0.52);
-        padding: 28px 22px;
+        border-radius: 18px;
+        background: rgba(252, 253, 253, 0.54);
+        padding: 16px;
         display: grid;
-        gap: 14px;
-        justify-items: start;
+        gap: 12px;
         transition: border-color 180ms ease, transform 180ms ease, background 180ms ease;
       }
 
       .dropzone.active {
-        border-color: rgba(140, 92, 62, 0.4);
-        background: rgba(255, 251, 246, 0.9);
+        border-color: rgba(107, 121, 136, 0.34);
+        background: rgba(247, 250, 252, 0.9);
         transform: translateY(-1px);
       }
 
       .button-row {
         display: flex;
-        gap: 12px;
-        flex-wrap: wrap;
-      }
-
-      .button,
-      .button-ghost {
-        appearance: none;
-        border-radius: 999px;
-        min-height: 44px;
-        padding: 0 18px;
-        font: inherit;
-        cursor: pointer;
-        transition: transform 180ms ease, background 180ms ease, border-color 180ms ease, color 180ms ease;
-      }
-
-      .button {
-        border: 1px solid rgba(140, 92, 62, 0.22);
-        background: linear-gradient(180deg, rgba(161, 118, 88, 0.16), rgba(140, 92, 62, 0.08));
-        color: var(--text);
-      }
-
-      .button-ghost {
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.42);
-        color: var(--muted);
-      }
-
-      .button:hover,
-      .button-ghost:hover {
-        transform: translateY(-1px);
-      }
-
-      .meta {
-        display: flex;
         gap: 10px;
         flex-wrap: wrap;
       }
 
-      .stack {
-        display: grid;
-        gap: 14px;
+      .button-row > * {
+        min-width: 0;
+      }
+
+      .dropzone .button-row {
+        width: 100%;
+      }
+
+      .dropzone .button {
+        width: 100%;
+      }
+
+      .file-pills {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
       }
 
       .meta-pill {
         display: inline-flex;
         align-items: center;
-        min-height: 34px;
+        min-height: 32px;
         padding: 0 12px;
-        border-radius: 999px;
         border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.42);
+        border-radius: 999px;
+        background: rgba(252, 253, 253, 0.48);
         color: var(--muted);
-        font-size: 0.84rem;
+        font-size: 0.82rem;
+      }
+
+      .library-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+      }
+
+      .library-title {
+        margin: 0;
+        font-size: 0.98rem;
+        font-weight: 600;
+      }
+
+      .library-list {
+        display: grid;
+        gap: 10px;
+        max-height: 320px;
+        overflow: auto;
+        padding-right: 4px;
+      }
+
+      .library-empty {
+        display: none;
+        color: var(--muted);
+        font-size: 0.9rem;
+      }
+
+      .library-item {
+        display: grid;
+        gap: 10px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        background: rgba(252, 253, 253, 0.46);
+      }
+
+      .library-item.current {
+        border-color: rgba(107, 121, 136, 0.24);
+        background: rgba(246, 249, 251, 0.92);
+      }
+
+      .library-item-head {
+        display: grid;
+        gap: 10px;
+      }
+
+      .library-item-title {
+        margin: 0;
+        font-size: 0.96rem;
+        font-weight: 600;
+        min-width: 0;
+        word-break: break-word;
+      }
+
+      .library-item-meta {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 0.82rem;
+        line-height: 1.45;
+        word-break: break-word;
+      }
+
+      .library-item-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
       }
 
       .reader-panel {
-        margin-top: 24px;
-        overflow: hidden;
-      }
-
-      body.reading-mode .reader-panel {
         margin-top: 0;
-        background: transparent;
-        box-shadow: none;
-        border-color: transparent;
-      }
-
-      body.reading-mode.zen-mode .reader-panel {
-        border-color: transparent;
-        box-shadow: none;
-        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 24px;
+        background: var(--panel);
+        box-shadow: var(--shadow);
+        overflow: hidden;
       }
 
       .reader-shell {
         display: grid;
-        grid-template-columns: 280px minmax(0, 1fr);
-        min-height: 70vh;
-      }
-
-      body.reading-mode .reader-shell {
-        display: block;
-        min-height: auto;
+        grid-template-columns: 250px minmax(0, 1fr);
+        min-height: 72vh;
       }
 
       .reader-aside {
+        padding: 22px 20px;
         border-right: 1px solid var(--line);
-        padding: 26px 22px;
-        background: linear-gradient(180deg, rgba(255, 255, 255, 0.3), rgba(248, 241, 232, 0.2));
+        background: linear-gradient(180deg, rgba(252, 253, 253, 0.34), rgba(239, 243, 245, 0.22));
         display: grid;
         align-content: start;
         gap: 18px;
       }
 
-      body.reading-mode .reader-aside {
-        display: none;
-      }
-
-      .reader-aside h3,
-      .reader-aside h4 {
+      .aside-label {
         margin: 0;
-      }
-
-      .reader-aside h3 {
-        font-size: 1rem;
-      }
-
-      .reader-aside h4 {
         color: var(--muted);
-        font-size: 0.74rem;
+        font-size: 0.72rem;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-      }
-
-      .reader-aside p {
-        margin: 0;
-        color: var(--muted);
-        line-height: 1.65;
-        font-size: 0.94rem;
       }
 
       .toc {
@@ -290,7 +321,7 @@
         color: var(--text);
         text-decoration: none;
         line-height: 1.5;
-        font-size: 0.95rem;
+        font-size: 0.92rem;
       }
 
       .toc a:hover {
@@ -298,94 +329,14 @@
       }
 
       .reader-main {
-        padding: 44px min(6vw, 64px) 56px;
+        padding: 18px min(5vw, 56px) 44px;
         background: var(--panel-strong);
       }
 
-      body.reading-mode .reader-main {
-        padding: 10px 0 20px;
-        background: transparent;
-      }
-
-      body.reading-mode.zen-mode .reader-main {
-        padding-top: 0;
-      }
-
-      .reader-toolbar {
-        display: none;
-      }
-
-      body.reading-mode .reader-toolbar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 14px;
-        flex-wrap: wrap;
-        margin-bottom: 18px;
-        padding: 10px 14px;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: rgba(255, 252, 245, 0.78);
-        box-shadow: 0 10px 24px rgba(62, 48, 35, 0.05);
-        backdrop-filter: blur(14px);
-      }
-
-      body.reading-mode.zen-mode .reader-toolbar {
-        display: none;
-      }
-
-      .reader-toolbar-main,
-      .reader-toolbar-actions {
-        display: flex;
-        align-items: center;
-        gap: 10px 12px;
-        flex-wrap: wrap;
-      }
-
-      .zen-dock {
-        position: fixed;
-        top: 16px;
-        right: 16px;
-        display: none;
-        align-items: center;
-        gap: 10px 12px;
-        padding: 10px 12px;
-        border: 1px solid var(--line);
-        border-radius: 999px;
-        background: rgba(255, 252, 245, 0.82);
-        box-shadow: 0 12px 30px rgba(62, 48, 35, 0.08);
-        backdrop-filter: blur(14px);
-        z-index: 30;
-      }
-
-      body.reading-mode.zen-mode .zen-dock {
-        display: inline-flex;
-      }
-
-      .empty-state {
-        min-height: 60vh;
-        display: grid;
-        place-items: center;
-        text-align: center;
-      }
-
-      .empty-copy {
-        display: grid;
-        gap: 14px;
-      }
-
       .prose {
-        max-width: 760px;
-        margin: 0 auto;
-        font-family: var(--prose-font);
-      }
-
-      body.reading-mode .prose {
         max-width: 780px;
-      }
-
-      body.reading-mode.zen-mode .prose {
-        max-width: 800px;
+        margin: 0 auto;
+        font-family: var(--serif-font);
       }
 
       .prose > :first-child {
@@ -396,34 +347,34 @@
       .prose h2,
       .prose h3,
       .prose h4 {
-        font-family: "Newsreader", Georgia, serif;
+        font-family: var(--serif-font);
         font-weight: 500;
         letter-spacing: -0.02em;
-        color: #241d17;
+        color: #24292f;
       }
 
       .prose h1 {
-        font-size: clamp(2.6rem, 5vw, 4rem);
-        line-height: 0.96;
-        margin: 0 0 24px;
+        font-size: clamp(2.4rem, 4.3vw, 3.5rem);
+        line-height: 0.98;
+        margin: 0 0 20px;
       }
 
       .prose h2 {
-        font-size: clamp(1.9rem, 3vw, 2.5rem);
-        line-height: 1.02;
-        margin: 56px 0 18px;
+        font-size: clamp(1.7rem, 2.4vw, 2.2rem);
+        line-height: 1.04;
+        margin: 48px 0 16px;
       }
 
       .prose h3 {
-        font-size: 1.45rem;
-        margin: 36px 0 14px;
+        font-size: 1.34rem;
+        margin: 32px 0 12px;
       }
 
       .prose p,
       .prose li {
-        color: #40362c;
-        font-size: var(--prose-size);
-        line-height: var(--prose-line-height);
+        color: #3d454d;
+        font-size: 1.08rem;
+        line-height: 1.84;
       }
 
       .prose p,
@@ -445,26 +396,26 @@
 
       .prose a {
         color: var(--accent);
-        text-decoration-color: rgba(140, 92, 62, 0.35);
+        text-decoration-color: rgba(107, 121, 136, 0.34);
         text-underline-offset: 0.18em;
       }
 
       .prose strong {
-        color: #231c16;
+        color: #23282e;
       }
 
       .prose hr {
         border: 0;
         height: 1px;
         background: var(--line);
-        margin: 42px 0;
+        margin: 40px 0;
       }
 
       .prose blockquote {
-        border-left: 3px solid rgba(140, 92, 62, 0.24);
+        border-left: 3px solid rgba(107, 121, 136, 0.24);
         background: var(--quote);
-        padding: 16px 18px;
-        border-radius: 0 18px 18px 0;
+        border-radius: 0 16px 16px 0;
+        padding: 14px 16px;
       }
 
       .prose blockquote p:last-child {
@@ -472,21 +423,20 @@
       }
 
       .prose code {
-        font-family: "IBM Plex Mono", monospace;
+        font-family: ui-monospace, "SF Mono", SFMono-Regular, Menlo, monospace;
         font-size: 0.9em;
         background: rgba(47, 58, 69, 0.08);
         color: var(--code);
         border-radius: 8px;
-        padding: 0.16em 0.36em;
+        padding: 0.15em 0.36em;
       }
 
       .prose pre {
         overflow-x: auto;
-        padding: 18px 18px;
+        padding: 16px;
         border-radius: 18px;
         background: #1f252d;
         color: #eef2f7;
-        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
       }
 
       .prose pre code {
@@ -497,139 +447,25 @@
 
       .prose img {
         max-width: 100%;
-        border-radius: 20px;
+        border-radius: 18px;
         display: block;
-        margin: 26px auto;
+        margin: 24px auto;
+      }
+
+      .empty-state {
+        display: none;
+      }
+
+      .empty-copy {
+        color: var(--muted);
+        font-size: 0.95rem;
       }
 
       .hidden-input {
         display: none;
       }
 
-      .toolbar-title {
-        font-family: "Newsreader", Georgia, serif;
-        font-size: 1.05rem;
-        font-weight: 500;
-        color: var(--text);
-      }
-
-      .library-panel {
-        display: grid;
-        gap: 12px;
-        padding-top: 4px;
-      }
-
-      .panel-head {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .panel-head h3 {
-        margin: 0;
-        font-size: 1rem;
-        font-weight: 600;
-      }
-
-      .library-list {
-        display: grid;
-        gap: 10px;
-      }
-
-      .library-empty {
-        display: none;
-      }
-
-      .library-item {
-        display: grid;
-        gap: 10px;
-        padding: 14px;
-        border: 1px solid var(--line);
-        border-radius: 18px;
-        background: rgba(255, 255, 255, 0.44);
-      }
-
-      .library-item.current {
-        border-color: rgba(140, 92, 62, 0.28);
-        background: rgba(255, 251, 246, 0.82);
-      }
-
-      .library-item-head {
-        display: flex;
-        align-items: start;
-        justify-content: space-between;
-        gap: 12px;
-      }
-
-      .library-item-title {
-        margin: 0;
-        font-size: 0.98rem;
-        font-weight: 600;
-      }
-
-      .library-item-meta {
-        margin: 4px 0 0;
-        color: var(--muted);
-        font-size: 0.84rem;
-        line-height: 1.5;
-      }
-
-      .library-item-actions {
-        display: flex;
-        gap: 8px;
-        flex-wrap: wrap;
-      }
-
-      .tiny-button {
-        appearance: none;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.52);
-        color: var(--text);
-        border-radius: 999px;
-        min-height: 34px;
-        padding: 0 12px;
-        font: inherit;
-        cursor: pointer;
-      }
-
-      .tiny-button[data-tone="danger"] {
-        color: #7b4332;
-      }
-
-      .segmented {
-        display: inline-flex;
-        align-items: center;
-        padding: 4px;
-        border-radius: 999px;
-        border: 1px solid var(--line);
-        background: rgba(255, 255, 255, 0.48);
-        gap: 4px;
-      }
-
-      .segment-button {
-        appearance: none;
-        border: 0;
-        background: transparent;
-        color: var(--muted);
-        min-height: 34px;
-        padding: 0 12px;
-        border-radius: 999px;
-        font: inherit;
-        cursor: pointer;
-        transition: background 180ms ease, color 180ms ease;
-      }
-
-      .segment-button.active {
-        background: rgba(140, 92, 62, 0.11);
-        color: var(--text);
-      }
-
       @media (max-width: 980px) {
-        .hero {
-          grid-template-columns: 1fr;
-        }
-
         .reader-shell {
           grid-template-columns: 1fr;
         }
@@ -638,140 +474,69 @@
           border-right: 0;
           border-bottom: 1px solid var(--line);
         }
-
-        body.reading-mode .reader-toolbar {
-          padding: 12px 14px;
-        }
-
-        .zen-dock {
-          top: auto;
-          right: 14px;
-          bottom: 14px;
-          left: 14px;
-          justify-content: space-between;
-        }
       }
 
       @media (max-width: 720px) {
         .page {
-          width: min(100% - 20px, 1160px);
+          width: min(100% - 20px, 1120px);
           padding: 18px 0 28px;
         }
 
-        .hero-copy,
-        .upload-panel,
         .reader-main,
         .reader-aside {
           padding-left: 20px;
           padding-right: 20px;
         }
 
-        .reader-main {
-          padding-top: 30px;
-          padding-bottom: 34px;
-        }
-
-        body.reading-mode .reader-main {
-          padding-top: 8px;
-        }
-
         .prose h1 {
-          font-size: 2.3rem;
-        }
-
-        .prose h2 {
-          font-size: 1.7rem;
+          font-size: 2rem;
         }
       }
     </style>
   </head>
   <body>
+    <button class="menu-button" id="menuButton" type="button">Menu</button>
+    <div class="menu-backdrop" id="menuBackdrop"></div>
+
     <div class="page">
-      <section class="hero">
-        <div class="hero-copy">
-          <p class="eyebrow">Azi Reader</p>
-          <h1>Markdown Reader</h1>
-        </div>
-
-        <aside class="upload-panel">
-          <div class="upload-head">
-            <h2>Open a file</h2>
-          </div>
-
+      <section class="menu-panel">
+        <section class="menu-section">
+          <p class="menu-label">Open</p>
           <div class="dropzone" id="dropzone">
             <div class="button-row">
               <button class="button" id="pickFileButton" type="button">Choose markdown</button>
-              <button class="button-ghost" id="loadSampleButton" type="button">Load sample</button>
+            </div>
+            <div class="file-pills">
+              <span class="meta-pill" id="fileNamePill">No file loaded</span>
+              <span class="meta-pill" id="wordCountPill">0 words</span>
             </div>
             <input class="hidden-input" id="fileInput" type="file" accept=".md,.markdown,text/markdown" />
           </div>
+        </section>
 
-          <div class="meta">
-            <span class="meta-pill" id="fileNamePill">No file loaded</span>
-            <span class="meta-pill" id="wordCountPill">0 words</span>
+        <section class="menu-section">
+          <div class="library-head">
+            <p class="library-title">Saved locally</p>
+            <button class="button-ghost" id="clearLibraryButton" type="button">Clear all</button>
           </div>
-
-          <section class="library-panel">
-            <div class="panel-head">
-              <h3>Saved locally</h3>
-              <button class="button-ghost" id="clearLibraryButton" type="button">Clear all</button>
-            </div>
-            <div class="library-list" id="libraryList"></div>
-            <p class="library-empty" id="libraryEmpty"></p>
-          </section>
-        </aside>
+          <div class="library-list" id="libraryList"></div>
+          <p class="library-empty" id="libraryEmpty">No saved files yet.</p>
+        </section>
       </section>
 
       <section class="reader-panel">
         <div class="reader-shell">
           <aside class="reader-aside">
             <div>
-              <h4>Current file</h4>
-              <h3 id="asideTitle">Waiting for a markdown file</h3>
-            </div>
-
-            <div>
-              <h4>Table of contents</h4>
+              <p class="aside-label">Table of contents</p>
               <nav class="toc" id="toc">
-                <p>No headings yet.</p>
+                <p class="empty-copy">No headings yet.</p>
               </nav>
             </div>
           </aside>
 
           <main class="reader-main">
-            <div class="reader-toolbar" id="readerToolbar">
-              <div class="reader-toolbar-main">
-                <span class="toolbar-title" id="toolbarTitle">Untitled document</span>
-                <span class="meta-pill" id="toolbarWordCount">0 words</span>
-              </div>
-              <div class="reader-toolbar-actions">
-                <div class="segmented" aria-label="Body font">
-                  <button class="segment-button" id="sansModeButton" type="button">Sans</button>
-                  <button class="segment-button" id="iowanModeButton" type="button">Iowan</button>
-                  <button class="segment-button" id="crimsonModeButton" type="button">Crimson</button>
-                  <button class="segment-button" id="sourceModeButton" type="button">Source</button>
-                </div>
-                <button class="button-ghost" id="zenModeButton" type="button">Zen mode</button>
-                <button class="button-ghost" id="changeFileButton" type="button">Change file</button>
-                <button class="button-ghost" id="exitReadingButton" type="button">Show tools</button>
-              </div>
-            </div>
-
-            <div class="zen-dock" id="zenDock">
-              <div class="segmented" aria-label="Body font">
-                <button class="segment-button" id="zenSansModeButton" type="button">Sans</button>
-                <button class="segment-button" id="zenIowanModeButton" type="button">Iowan</button>
-                <button class="segment-button" id="zenCrimsonModeButton" type="button">Crimson</button>
-                <button class="segment-button" id="zenSourceModeButton" type="button">Source</button>
-              </div>
-              <button class="button-ghost" id="exitZenButton" type="button">Exit Zen</button>
-            </div>
-
-            <div class="empty-state" id="emptyState">
-              <div class="empty-copy">
-                <button class="button" id="emptyPickFileButton" type="button">Choose markdown</button>
-              </div>
-            </div>
+            <div class="empty-state" id="emptyState"></div>
 
             <article class="prose" id="prose" hidden></article>
           </main>
@@ -783,68 +548,21 @@
       import { marked } from "https://cdn.jsdelivr.net/npm/marked/lib/marked.esm.js";
 
       const fileInput = document.getElementById("fileInput");
+      const menuButton = document.getElementById("menuButton");
+      const menuBackdrop = document.getElementById("menuBackdrop");
       const pickFileButton = document.getElementById("pickFileButton");
-      const emptyPickFileButton = document.getElementById("emptyPickFileButton");
-      const loadSampleButton = document.getElementById("loadSampleButton");
-      const changeFileButton = document.getElementById("changeFileButton");
-      const exitReadingButton = document.getElementById("exitReadingButton");
-      const zenModeButton = document.getElementById("zenModeButton");
-      const exitZenButton = document.getElementById("exitZenButton");
-      const sansModeButton = document.getElementById("sansModeButton");
-      const iowanModeButton = document.getElementById("iowanModeButton");
-      const crimsonModeButton = document.getElementById("crimsonModeButton");
-      const sourceModeButton = document.getElementById("sourceModeButton");
-      const zenSansModeButton = document.getElementById("zenSansModeButton");
-      const zenIowanModeButton = document.getElementById("zenIowanModeButton");
-      const zenCrimsonModeButton = document.getElementById("zenCrimsonModeButton");
-      const zenSourceModeButton = document.getElementById("zenSourceModeButton");
+      const clearLibraryButton = document.getElementById("clearLibraryButton");
       const dropzone = document.getElementById("dropzone");
       const fileNamePill = document.getElementById("fileNamePill");
       const wordCountPill = document.getElementById("wordCountPill");
-      const toolbarTitle = document.getElementById("toolbarTitle");
-      const toolbarWordCount = document.getElementById("toolbarWordCount");
       const prose = document.getElementById("prose");
       const emptyState = document.getElementById("emptyState");
-      const asideTitle = document.getElementById("asideTitle");
       const toc = document.getElementById("toc");
       const libraryList = document.getElementById("libraryList");
       const libraryEmpty = document.getElementById("libraryEmpty");
-      const clearLibraryButton = document.getElementById("clearLibraryButton");
-      const storedFontMode = localStorage.getItem("azi-reader-font");
-      const storedZenMode = localStorage.getItem("azi-reader-zen");
       const libraryStorageKey = "azi-reader-library";
       const lastDocumentStorageKey = "azi-reader-last-document";
       let currentDocumentId = null;
-
-      const sampleMarkdown = `# A Quiet Reader
-
-This is a small markdown reader made for files that deserve a calmer page.
-
-## Why it exists
-
-Sometimes a raw editor preview is too mechanical.
-Sometimes a document wants more air, stronger hierarchy, and a gentler reading rhythm.
-
-## What it does
-
-- opens one local markdown file
-- renders it directly in the browser
-- keeps the interface quiet
-
-> The page should not perform. It should hold the writing without getting in the way.
-
-## A short code block
-
-\`\`\`ts
-type ReaderState = {
-  fileName: string;
-  content: string;
-};
-\`\`\`
-
-## Last note
-
-If the file is well written, the UI should step back and let the structure become visible.`;
 
       marked.setOptions({
         breaks: false,
@@ -864,15 +582,6 @@ If the file is well written, the UI should step back and let the structure becom
         localStorage.setItem(libraryStorageKey, JSON.stringify(documents));
       }
 
-      function formatUpdatedAt(value) {
-        return new Intl.DateTimeFormat(undefined, {
-          month: "short",
-          day: "numeric",
-          hour: "numeric",
-          minute: "2-digit",
-        }).format(new Date(value));
-      }
-
       function setCurrentDocument(id) {
         currentDocumentId = id;
 
@@ -883,10 +592,74 @@ If the file is well written, the UI should step back and let the structure becom
         }
       }
 
+      function formatUpdatedAt(value) {
+        return new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+          hour: "numeric",
+          minute: "2-digit",
+        }).format(new Date(value));
+      }
+
+      function countWords(text) {
+        return text.trim() ? text.trim().split(/\s+/).length : 0;
+      }
+
+      function extractTitle(markdown, fallback) {
+        const match = markdown.match(/^#\s+(.+)$/m);
+        return match?.[1]?.trim() || fallback;
+      }
+
+      function slugify(text) {
+        return text
+          .toLowerCase()
+          .trim()
+          .replace(/[^\w\s-]/g, "")
+          .replace(/\s+/g, "-")
+          .replace(/-+/g, "-");
+      }
+
+      function setMenuOpen(enabled) {
+        document.body.classList.toggle("menu-open", enabled);
+      }
+
+      function resetReaderState() {
+        prose.hidden = true;
+        prose.innerHTML = "";
+        emptyState.hidden = true;
+        fileNamePill.textContent = "No file loaded";
+        wordCountPill.textContent = "0 words";
+        toc.innerHTML = '<p class="empty-copy">No headings yet.</p>';
+        document.title = "Azi Reader Desktop";
+      }
+
+      function buildToc() {
+        const headings = Array.from(prose.querySelectorAll("h1, h2, h3"));
+
+        if (!headings.length) {
+          toc.innerHTML = '<p class="empty-copy">No headings yet.</p>';
+          return;
+        }
+
+        toc.innerHTML = "";
+
+        headings.forEach((heading) => {
+          const id = slugify(heading.textContent || "section");
+          heading.id = heading.id || id;
+
+          const link = document.createElement("a");
+          link.href = `#${heading.id}`;
+          link.textContent = heading.textContent || "Section";
+          link.style.paddingLeft =
+            heading.tagName === "H3" ? "16px" : heading.tagName === "H2" ? "8px" : "0";
+          toc.appendChild(link);
+        });
+      }
+
       function renderLibrary() {
         const documents = getLibrary();
         libraryList.innerHTML = "";
-        libraryEmpty.hidden = documents.length > 0;
+        libraryEmpty.style.display = documents.length ? "none" : "block";
         clearLibraryButton.hidden = documents.length === 0;
 
         documents.forEach((documentItem) => {
@@ -920,6 +693,7 @@ If the file is well written, the UI should step back and let the structure becom
           openButton.textContent = "Open";
           openButton.addEventListener("click", () => {
             renderMarkdown(documentItem.content, documentItem.fileName, documentItem.id, false);
+            setMenuOpen(false);
           });
 
           const deleteButton = document.createElement("button");
@@ -976,87 +750,10 @@ If the file is well written, the UI should step back and let the structure becom
 
         if (currentDocumentId === documentId) {
           setCurrentDocument(null);
+          resetReaderState();
         }
 
         renderLibrary();
-      }
-
-      function syncFontButtons(mode) {
-        const groups = {
-          sans: [sansModeButton, zenSansModeButton],
-          iowan: [iowanModeButton, zenIowanModeButton],
-          crimson: [crimsonModeButton, zenCrimsonModeButton],
-          source: [sourceModeButton, zenSourceModeButton],
-        };
-
-        Object.entries(groups).forEach(([key, buttons]) => {
-          buttons.forEach((button) => {
-            button.classList.toggle("active", mode === key);
-          });
-        });
-      }
-
-      function setFontMode(mode) {
-        document.body.classList.remove("font-iowan", "font-crimson", "font-source");
-
-        if (mode === "iowan") {
-          document.body.classList.add("font-iowan");
-        } else if (mode === "crimson") {
-          document.body.classList.add("font-crimson");
-        } else if (mode === "source") {
-          document.body.classList.add("font-source");
-        } else {
-          mode = "sans";
-        }
-
-        localStorage.setItem("azi-reader-font", mode);
-        syncFontButtons(mode);
-      }
-
-      function setZenMode(enabled) {
-        document.body.classList.toggle("zen-mode", enabled);
-        localStorage.setItem("azi-reader-zen", enabled ? "1" : "0");
-      }
-
-      function slugify(text) {
-        return text
-          .toLowerCase()
-          .trim()
-          .replace(/[^\w\s-]/g, "")
-          .replace(/\s+/g, "-")
-          .replace(/-+/g, "-");
-      }
-
-      function countWords(text) {
-        return text.trim() ? text.trim().split(/\s+/).length : 0;
-      }
-
-      function extractTitle(markdown, fallback) {
-        const match = markdown.match(/^#\s+(.+)$/m);
-        return match?.[1]?.trim() || fallback;
-      }
-
-      function buildToc() {
-        const headings = Array.from(prose.querySelectorAll("h1, h2, h3"));
-
-        if (!headings.length) {
-          toc.innerHTML = "<p>No headings yet.</p>";
-          return;
-        }
-
-        toc.innerHTML = "";
-
-        headings.forEach((heading) => {
-          const id = slugify(heading.textContent || "section");
-          heading.id = heading.id || id;
-
-          const link = document.createElement("a");
-          link.href = `#${heading.id}`;
-          link.textContent = heading.textContent || "Section";
-          link.style.paddingLeft =
-            heading.tagName === "H3" ? "16px" : heading.tagName === "H2" ? "8px" : "0";
-          toc.appendChild(link);
-        });
       }
 
       function renderMarkdown(markdown, fileName, documentId = null, shouldPersist = true) {
@@ -1064,16 +761,13 @@ If the file is well written, the UI should step back and let the structure becom
         prose.innerHTML = html;
         prose.hidden = false;
         emptyState.hidden = true;
-        document.body.classList.add("reading-mode");
 
         const title = extractTitle(markdown, fileName || "Untitled document");
         const wordCount = `${countWords(markdown)} words`;
-        asideTitle.textContent = title;
         fileNamePill.textContent = fileName || "Untitled document";
         wordCountPill.textContent = wordCount;
-        toolbarTitle.textContent = title;
-        toolbarWordCount.textContent = wordCount;
         buildToc();
+        document.title = `${title} · Azi Reader`;
 
         if (shouldPersist) {
           setCurrentDocument(upsertDocument(fileName || "Untitled document", markdown, documentId));
@@ -1088,37 +782,34 @@ If the file is well written, the UI should step back and let the structure becom
         renderMarkdown(text, file.name);
       }
 
+      menuButton.addEventListener("click", () => {
+        setMenuOpen(!document.body.classList.contains("menu-open"));
+      });
+
+      menuBackdrop.addEventListener("click", () => {
+        setMenuOpen(false);
+      });
+
       pickFileButton.addEventListener("click", () => fileInput.click());
-      emptyPickFileButton.addEventListener("click", () => fileInput.click());
 
       fileInput.addEventListener("change", async (event) => {
         const file = event.target.files?.[0];
+
         if (!file) {
           return;
         }
 
         await readFile(file);
         fileInput.value = "";
+        setMenuOpen(false);
       });
 
-      loadSampleButton.addEventListener("click", () => {
-        renderMarkdown(sampleMarkdown, "sample.md");
+      clearLibraryButton.addEventListener("click", () => {
+        setLibrary([]);
+        setCurrentDocument(null);
+        resetReaderState();
+        renderLibrary();
       });
-
-      changeFileButton.addEventListener("click", () => fileInput.click());
-      exitReadingButton.addEventListener("click", () => {
-        document.body.classList.remove("reading-mode");
-      });
-      zenModeButton.addEventListener("click", () => setZenMode(true));
-      exitZenButton.addEventListener("click", () => setZenMode(false));
-      sansModeButton.addEventListener("click", () => setFontMode("sans"));
-      iowanModeButton.addEventListener("click", () => setFontMode("iowan"));
-      crimsonModeButton.addEventListener("click", () => setFontMode("crimson"));
-      sourceModeButton.addEventListener("click", () => setFontMode("source"));
-      zenSansModeButton.addEventListener("click", () => setFontMode("sans"));
-      zenIowanModeButton.addEventListener("click", () => setFontMode("iowan"));
-      zenCrimsonModeButton.addEventListener("click", () => setFontMode("crimson"));
-      zenSourceModeButton.addEventListener("click", () => setFontMode("source"));
 
       ["dragenter", "dragover"].forEach((eventName) => {
         dropzone.addEventListener(eventName, (event) => {
@@ -1142,22 +833,10 @@ If the file is well written, the UI should step back and let the structure becom
         }
 
         await readFile(file);
+        setMenuOpen(false);
       });
 
-      clearLibraryButton.addEventListener("click", () => {
-        setLibrary([]);
-        setCurrentDocument(null);
-        renderLibrary();
-      });
-
-      const normalizedStoredFontMode =
-        storedFontMode === "serif"
-          ? "source"
-          : ["sans", "iowan", "crimson", "source"].includes(storedFontMode)
-            ? storedFontMode
-            : "sans";
-      setFontMode(normalizedStoredFontMode);
-      setZenMode(storedZenMode === "1");
+      resetReaderState();
       renderLibrary();
 
       const lastDocumentId = localStorage.getItem(lastDocumentStorageKey);
